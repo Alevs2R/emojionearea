@@ -4,6 +4,15 @@ define([
 ],
 function(emojione, unicodeTo) {
     return function(str, self) {
+        var urlify = function(text) {
+            var urlRegex = /(https?:\/\/[^\s]+)/g;
+            text = text.replace(/(\@[^\s]+)/g, '<a>$1</a>');
+            text = text.replace(/(\#[^\s]+)/g, '<a>$1</a>');
+
+            return text.replace(urlRegex, '<a href="$1">$1</a>');
+        };
+
+
         str = str
             .replace(/&/g, '&amp;')
             .replace(/</g, '&lt;')
@@ -18,6 +27,9 @@ function(emojione, unicodeTo) {
         if (self.shortnames) {
             str = emojione.shortnameToUnicode(str);
         }
+
+        str = urlify(str);
+
         return unicodeTo(str, self.emojiTemplate)
             .replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;')
             .replace(/  /g, '&nbsp;&nbsp;');

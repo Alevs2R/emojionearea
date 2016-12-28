@@ -3,7 +3,7 @@
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2016-12-28T14:05Z
+ * Date: 2016-12-28T16:51Z
  */
 (function(document, window, $) {
     'use strict';
@@ -404,6 +404,15 @@
         });
     }
     function htmlFromText(str, self) {
+        var urlify = function(text) {
+            var urlRegex = /(https?:\/\/[^\s]+)/g;
+            text = text.replace(/(\@[^\s]+)/g, '<a>$1</a>');
+            text = text.replace(/(\#[^\s]+)/g, '<a>$1</a>');
+
+            return text.replace(urlRegex, '<a href="$1">$1</a>');
+        };
+
+
         str = str
             .replace(/&/g, '&amp;')
             .replace(/</g, '&lt;')
@@ -418,6 +427,9 @@
         if (self.shortnames) {
             str = emojione.shortnameToUnicode(str);
         }
+
+        str = urlify(str);
+
         return unicodeTo(str, self.emojiTemplate)
             .replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;')
             .replace(/  /g, '&nbsp;&nbsp;');
@@ -918,9 +930,42 @@
             }
         });
 
+
+        var urlify = function(dom) {
+            var urlRegex = /(https?:\/\/[^\s]+)/g;
+
+
+            dom.contents()
+                .filter(function() {
+                    return this.nodeType === 3;
+                })
+                .each(function(index){
+                    //console.log(abc.);
+
+                    //console.log($(this).text());
+
+                    if($(this).text().search(urlRegex) != -1) {
+                        console.log($(this).text());
+                        var newText = $(this).text().replace(urlRegex, '<a href="$1">$1</a>');
+                        console.log(newText);
+                        $(this).insertBefore(newText);
+                        $(this).replaceWith(newText).focus();
+                    }
+
+                });
+            var v = dom.html();
+            dom.html('');
+            dom.html(v);
+
+            //return text;
+        };
+
         if (options.shortcuts) {
             self.on("@keydown", function(_, e) {
                 if (!e.ctrlKey) {
+                    if(e.which == 32) urlify(self.editor);
+
+
                     if (e.which == 9) {
                         e.preventDefault();
                         button.click();
@@ -1004,6 +1049,22 @@
                         index: 1,
                         replace: function (mention) {
                             return '<a href="#">#' + mention + '<a/>'
+                        }
+                    }
+                ]);
+
+                editor.textcomplete([
+                    { // html
+                        id: css_class,
+                        mentions: ['a'],
+                        match: /\Bw(\w*)$/,
+                        search: function (term, callback) {
+                                        callback([term]);
+
+                        },
+                        index: 1,
+                        replace: function (mention) {
+                            return mention + 'w';
                         }
                     }
                 ]);

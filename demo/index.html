@@ -39,7 +39,7 @@
 
 <section class="main-content">
 
-    <h2>Emoji One Area</h2>
+    <h2>Emoji One Area (completed with url parsing, tags and logins)</h2>
 
     <p>Emojione-area is a small jQuery plugin that allows you to transform any html element into simple WYSIWYG editor
         with ability to use Emojione icons. The end result is a secure text/plain in which the image icons will be
@@ -53,9 +53,7 @@
         <div class="row">
             <div class="col-6">
                 <p>From:</p>
-                <textarea id="demo1">
-                    @nick #love
-  Lorem ipsum dolor 😍 sit amet, consectetur 👻 adipiscing elit, 🖐 sed do eiusmod tempor ☔ incididunt ut labore et dolore magna aliqua 🐬.
+                <textarea id="demo1">http://www.example.com @nick #love Lorem ipsum dolor 😍 sit amet, consectetur 👻 adipiscing elit, 🖐 sed do eiusmod tempor ☔ incididunt ut labore et dolore magna aliqua 🐬.
   </textarea>
             </div>
             <div class="col-6">
@@ -90,7 +88,7 @@
   &lt;div class=&quot;col-6&quot;&gt;
     &lt;p&gt;From:&lt;/p&gt;
     &lt;textarea id=&quot;demo1&quot;&gt;
-Lorem ipsum dolor 😍 sit amet, consectetur 👻 adipiscing elit, 🖐 sed do eiusmod tempor ☔ incididunt ut labore et dolore magna aliqua 🐬.
+http://www.example.com @nick #love Lorem ipsum dolor 😍 sit amet, consectetur 👻 adipiscing elit, 🖐 sed do eiusmod tempor ☔ incididunt ut labore et dolore magna aliqua 🐬.
 &lt;/textarea&gt;
   &lt;/div&gt;
   &lt;div class=&quot;col-6&quot;&gt;
@@ -104,6 +102,10 @@ Lorem ipsum dolor 😍 sit amet, consectetur 👻 adipiscing elit, 🖐 sed do e
     $(&quot;#demo1&quot;).emojioneArea({
       container: &quot;#container&quot;,
       hideSource: false,
+      loginsLocal: ['nick', 'john'],
+      //loginsUrl: '/loginSearch',
+      tagsLocal: ['love', 'little']
+      //tagsUrl: '/tagSearch'
     });
   });
 &lt;/script&gt;
