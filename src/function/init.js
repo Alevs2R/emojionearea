@@ -423,9 +423,9 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                         id: css_class,
                         match: /\B(:[\-+\w]*)$/,
                         search: function (term, callback) {
-                            callback($.map(map, function (emoji) {
-                                return emoji.indexOf(term) === 0 ? emoji : null;
-                            }));
+                                callback($.map(map, function (emoji) {
+                                    return emoji.indexOf(term) === 0 ? emoji : null;
+                                }));
                         },
                         template: function (value) {
                             return shortnameTo(value, self.emojiTemplate) + " " + value.replace(/:/g, '');
@@ -437,6 +437,64 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                         index: 1
                     }
                 ], textcompleteOptions);
+
+                editor.textcomplete([
+                    { // html
+                        id: css_class,
+                        mentions: options.loginsLocal,
+                        match: /\B#(\w*)$/,
+                        search: function (term, callback) {
+                            if (options.loginsUrl) {
+                                console.log('json');
+                                $.getJSON(options.loginsUrl, {q: term})
+                                    .done(function (resp) {
+                                        callback(resp);
+                                    })
+                                    .fail(function () {
+                                        callback([]);
+                                    });
+                            } else {
+                                callback($.map(this.mentions, function (mention) {
+                                    return mention.indexOf(term) === 0 ? mention : null;
+                                }));
+                            }
+                        },
+                        index: 1,
+                        replace: function (mention) {
+                            return '<a href="#">#' + mention + '<a/>'
+                        }
+                    }
+                ]);
+
+                editor.textcomplete([
+                    { // html
+                        id: css_class,
+                        mentions: options.tagsLocal,
+                        match: /\B@(\w*)$/,
+                        search: function (term, callback) {
+                            if (options.tagsUrl) {
+                                console.log('json');
+                                $.getJSON(options.tagsUrl, {q: term})
+                                    .done(function (resp) {
+                                        callback(resp);
+                                    })
+                                    .fail(function () {
+                                        callback([]);
+                                    });
+                            } else {
+                                callback($.map(this.mentions, function (mention) {
+                                    return mention.indexOf(term) === 0 ? mention : null;
+                                }));
+                            }
+                        },
+                        index: 1,
+                        replace: function (mention) {
+                            return '<a href="#">@' + mention + '<a/>'
+                        }
+                    }
+                ]);
+
+
 
                 if (options.textcomplete.placement) {
                     // Enable correct positioning for textcomplete

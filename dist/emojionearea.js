@@ -3,7 +3,7 @@
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2016-09-27T09:32Z
+ * Date: 2016-12-28T14:05Z
  */
 (function(document, window, $) {
     'use strict';
@@ -107,6 +107,10 @@
                 autocorrect       : "off",
                 autocapitalize    : "off",
             },
+
+            loginsUrl         : null,
+            tagsUrl           : null,
+
             placeholder       : null,
             emojiPlaceholder  : ":smiley:",
             container         : null,
@@ -961,9 +965,9 @@
                         id: css_class,
                         match: /\B(:[\-+\w]*)$/,
                         search: function (term, callback) {
-                            callback($.map(map, function (emoji) {
-                                return emoji.indexOf(term) === 0 ? emoji : null;
-                            }));
+                                callback($.map(map, function (emoji) {
+                                    return emoji.indexOf(term) === 0 ? emoji : null;
+                                }));
                         },
                         template: function (value) {
                             return shortnameTo(value, self.emojiTemplate) + " " + value.replace(/:/g, '');
@@ -975,6 +979,64 @@
                         index: 1
                     }
                 ], textcompleteOptions);
+
+                editor.textcomplete([
+                    { // html
+                        id: css_class,
+                        mentions: options.loginsLocal,
+                        match: /\B#(\w*)$/,
+                        search: function (term, callback) {
+                            if (options.loginsUrl) {
+                                console.log('json');
+                                $.getJSON(options.loginsUrl, {q: term})
+                                    .done(function (resp) {
+                                        callback(resp);
+                                    })
+                                    .fail(function () {
+                                        callback([]);
+                                    });
+                            } else {
+                                callback($.map(this.mentions, function (mention) {
+                                    return mention.indexOf(term) === 0 ? mention : null;
+                                }));
+                            }
+                        },
+                        index: 1,
+                        replace: function (mention) {
+                            return '<a href="#">#' + mention + '<a/>'
+                        }
+                    }
+                ]);
+
+                editor.textcomplete([
+                    { // html
+                        id: css_class,
+                        mentions: options.tagsLocal,
+                        match: /\B@(\w*)$/,
+                        search: function (term, callback) {
+                            if (options.tagsUrl) {
+                                console.log('json');
+                                $.getJSON(options.tagsUrl, {q: term})
+                                    .done(function (resp) {
+                                        callback(resp);
+                                    })
+                                    .fail(function () {
+                                        callback([]);
+                                    });
+                            } else {
+                                callback($.map(this.mentions, function (mention) {
+                                    return mention.indexOf(term) === 0 ? mention : null;
+                                }));
+                            }
+                        },
+                        index: 1,
+                        replace: function (mention) {
+                            return '<a href="#">@' + mention + '<a/>'
+                        }
+                    }
+                ]);
+
+
 
                 if (options.textcomplete.placement) {
                     // Enable correct positioning for textcomplete

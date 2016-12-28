@@ -11,6 +11,10 @@ function($) {
                 autocorrect       : "off",
                 autocapitalize    : "off",
             },
+
+            loginsUrl         : null,
+            tagsUrl           : null,
+
             placeholder       : null,
             emojiPlaceholder  : ":smiley:",
             container         : null,
