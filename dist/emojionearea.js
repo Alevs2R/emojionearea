@@ -3,7 +3,7 @@
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2016-12-28T16:51Z
+ * Date: 2017-01-01T14:53Z
  */
 (function(document, window, $) {
     'use strict';
@@ -931,33 +931,40 @@
         });
 
 
-        var urlify = function(dom) {
-            var urlRegex = /(https?:\/\/[^\s]+)/g;
+        function placeCaretAtEnd(el) {
+            el.focus();
+            if (typeof window.getSelection != "undefined" && typeof document.createRange != "undefined") {
+                var range = document.createRange();
+                range.selectNodeContents(el);
+                range.collapse(false);
+                var sel = window.getSelection();
+                sel.removeAllRanges();
+                sel.addRange(range);
+            } else if (typeof document.body.createTextRange != "undefined") {
+                var textRange = document.body.createTextRange();
+                textRange.moveToElementText(el);
+                textRange.collapse(false);
+                textRange.select();
+            }
+        }
 
+
+        var urlify = function(dom) {
+            var urlRegex = /((https?:\/\/)?([\w\.]+)\.([a-z]{2,6}\.?)(\/[\w\.]*)*\/?)/g;
+            var anotherRegex = /((#|@)[^\s]+)/g;
 
             dom.contents()
                 .filter(function() {
                     return this.nodeType === 3;
                 })
                 .each(function(index){
-                    //console.log(abc.);
-
-                    //console.log($(this).text());
-
-                    if($(this).text().search(urlRegex) != -1) {
-                        console.log($(this).text());
-                        var newText = $(this).text().replace(urlRegex, '<a href="$1">$1</a>');
-                        console.log(newText);
-                        $(this).insertBefore(newText);
-                        $(this).replaceWith(newText).focus();
-                    }
-
+                    //if($(this).text().search(urlRegex) != -1) {
+                    $(this).replaceWith($(this).text().replace(anotherRegex, '<a href="$1">$1</a>').replace(urlRegex, '<a href="test">$1</a>'));
+                    //console.log(newText);
+                    //}
                 });
-            var v = dom.html();
-            dom.html('');
-            dom.html(v);
 
-            //return text;
+            placeCaretAtEnd(dom.get(0));
         };
 
         if (options.shortcuts) {
